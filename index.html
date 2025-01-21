@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marine Science Simulation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .interaction-panel, .simulation-panel {
+            flex: 1;
+            margin: 10px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .control {
+            margin: 15px 0;
+        }
+        .control label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .control input[type="range"] {
+            width: 100%;
+        }
+        .output {
+            font-size: 1.2em;
+            color: #007acc;
+            text-align: right;
+        }
+        .simulation-display {
+            background: #e6f7ff;
+            border: 1px solid #b3d8ff;
+            padding: 15px;
+            border-radius: 8px;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="interaction-panel">
+            <h1>Interaction Panel</h1>
+
+            <div class="control">
+                <label for="oceanTemp">Ocean Temperature (°C)</label>
+                <input type="range" id="oceanTemp" min="-2" max="40" step="0.1" value="20">
+                <div class="output" id="oceanTempOutput">20°C</div>
+            </div>
+
+            <div class="control">
+                <label for="salinity">Ocean Salinity (PSU)</label>
+                <input type="range" id="salinity" min="30" max="40" step="0.1" value="35">
+                <div class="output" id="salinityOutput">35 PSU</div>
+            </div>
+
+            <div class="control">
+                <label for="waveHeight">Wave Height (m)</label>
+                <input type="range" id="waveHeight" min="0" max="20" step="0.1" value="1">
+                <div class="output" id="waveHeightOutput">1 m</div>
+            </div>
+
+            <div class="control">
+                <label for="waveSpeed">Wave Speed (m/s)</label>
+                <input type="range" id="waveSpeed" min="0" max="30" step="0.1" value="5">
+                <div class="output" id="waveSpeedOutput">5 m/s</div>
+            </div>
+
+            <div class="control">
+                <label for="depth">Sea Depth (m)</label>
+                <input type="range" id="depth" min="0" max="10000" step="10" value="1000">
+                <div class="output" id="depthOutput">1000 m</div>
+            </div>
+
+            <div class="control">
+                <label for="nitrogen">Nitrogen Levels (mg/L)</label>
+                <input type="range" id="nitrogen" min="0" max="50" step="0.1" value="10">
+                <div class="output" id="nitrogenOutput">10 mg/L</div>
+            </div>
+
+            <div class="control">
+                <label for="phosphorus">Phosphorus Levels (mg/L)</label>
+                <input type="range" id="phosphorus" min="0" max="50" step="0.1" value="1">
+                <div class="output" id="phosphorusOutput">1 mg/L</div>
+            </div>
+
+            <div class="control">
+                <label for="pH">pH Level</label>
+                <input type="range" id="pH" min="0" max="14" step="1" value="1">
+                <div class="output" id="pHOutput">1</div>
+            </div>
+
+            <div class="control">
+                <label for="oxygen">Oxygen Levels (mg/L)</label>
+                <input type="range" id="oxygen" min="0" max="50" step="0.1" value="1">
+                <div class="output" id="oxygenOutput">1 mg/L</div>
+            </div>
+
+            <div class="control">
+                <label for="turbidity">Turbidity (NTU)</label>
+                <input type="range" id="turbidity" min="0" max="100" step="0.1" value="1">
+                <div class="output" id="turbidityOutput">1 NTU</div>
+            </div>
+
+            <div class="control">
+                <label for="sunlightIntensity">Sunlight Intensity (UV Index)</label>
+                <input type="range" id="sunlightIntensity" min="0" max="50" step="0.1" value="1">
+                <div class="output" id="sunlightIntensityOutput">1 NTU</div>
+            </div>
+
+            <div class="control">
+                <label for="co2">Atmospheric CO₂ Levels (ppm)</label>
+                <input type="range" id="co2" min="300" max="600" step="1" value="400">
+                <div class="output" id="co2Output">400 ppm</div>
+            </div>
+
+              <!-- Add the missing controls -->
+             <div class="control">
+                <label for="plasticPollution">Plastic Pollution (tons/km²)</label>
+                <input type="range" id="plasticPollution" min="0" max="5" step="0.1" value="0.5">
+                <div class="output" id="plasticPollutionOutput">0.5 tons/km²</div>
+             </div>
+            
+            <div class="control">
+                <label for="heavyMetalPollution">Heavy Metal Pollution (ppm)</label>
+                <input type="range" id="heavyMetalPollution" min="0" max="1" step="0.01" value="0.01">
+                <div class="output" id="heavyMetalPollutionOutput">0.01 ppm</div>
+            </div>
+
+            <div class="control">
+                <label for="month">Month</label>
+                <input type="range" id="month" min="0" max="12" step="1" value="6">
+                <div class="output" id="timeOfDayOutput">12:00</div>
+            </div>
+
+            <div class="control">
+                <label for="timeOfDay">Time of Day (hours)</label>
+                <input type="range" id="timeOfDay" min="0" max="24" step="1" value="12">
+                <div class="output" id="timeOfDayOutput">12:00</div>
+            </div>
+
+            <div class="control">
+                <label for="fishingDensity">Fishing Density</label>
+                <input type="range" id="fishingDensity" min="0" max="100" step="1" value="20">
+                <div class="output" id="fishingDensityOutput">20%</div>
+            </div>
+
+            <div class="control">
+                <label for="boats">Amount of Boats</label>
+                <input type="range" id="boats" min="0" max="50" step="1" value="10">
+                <div class="output" id="boatsOutput">10 boats</div>
+            </div>
+        </div>
+
+        <div class="simulation-panel">
+            <h1>Simulation Panel</h1>
+            <div class="simulation-display" id="simulationDisplay">
+                <p>Plankton Growth Rate: <span id="simPlanktonGrowthRate">0%</span></p>
+                <p>Fish Population: <span id="simFishPopulation">0 individuals</span></p>
+                <p>Coral Health: <span id="simCoralHealth">0%</span></p>
+                <p>Sea Grass Coverage: <span id="simSeaGrass">0%</span></p>
+                <p>Algal Bloom Risk: <span id="simAlgalBloomRisk">0%</span></p>
+                <p>Oil From Boats Impact: <span id="simOilSpill">0%</span></p>
+                <p>Runoff Impact: <span id="simRunoff">0%</span></p>
+                <p>Ocean Acidification: <span id="simOceanAcidification">0</span></p>
+                <p>Marine Mammals: <span id="simMarineMammals">0 individuals</span></p>
+                <p>Deadzone Area: <span id="simDeadZoneArea">0%</span></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize controls after DOM loads
+        document.addEventListener('DOMContentLoaded', () => {
+            const controls = [
+                { id: 'oceanTemp', unit: '°C' },
+                { id: 'salinity', unit: 'PSU' },
+                { id: 'waveHeight', unit: 'm' },
+                { id: 'waveSpeed', unit: 'm/s' },
+                { id: 'depth', unit: 'm' },
+                { id: 'nitrogen', unit: 'μmol/L' },
+                { id: 'phosphorus', unit: 'μmol/L' },
+                { id: 'co2', unit: 'ppm' },
+                { id: 'pH', unit: '' },
+                { id: 'oxygen', unit: 'mg/L' },
+                { id: 'turbidity', unit: 'NTU' },
+                { id: 'sunlightIntensity', unit: '' },
+                { id: 'month', unit: '' },
+                { id: 'timeOfDay', unit: ':00' },
+                { id: 'fishingDensity', unit: ' boats/km²' },
+                { id: 'boats', unit: ' boats' },
+                { id: 'plasticPollution', unit: ' tons/km²' },
+                { id: 'heavyMetalPollution', unit: ' ppm' },
+            ];
+
+            controls.forEach(control => {
+                const range = document.getElementById(control.id);
+                const output = document.getElementById(`${control.id}Output`);
+
+                if (range && output) {
+                    // Set initial output display
+                    output.textContent = `${range.value}${control.unit}`;
+
+                    // Add event listener
+                    range.addEventListener('input', (event) => {
+                        const value = event.target.value;
+                        output.textContent = `${value}${control.unit}`;
+                        if (window.simulationState) {
+                            window.simulationState[control.id] = parseFloat(value);
+                            updateSimulationState();
+                        }
+                    });
+
+                    // Set initial simulation state
+                    if (window.simulationState) {
+                        window.simulationState[control.id] = parseFloat(range.value);
+                    }
+                }
+            });
+
+            // Initial simulation update
+            if (window.simulationState) {
+                updateSimulationState();
+            }
+        });
+    </script>
+    <script src="simulationBackend.js"></script>
+</body>
+</html>
