@@ -111,7 +111,155 @@
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="depthMapData.js"></script>
-<script src="depthMap.js"></script>
+<script>
+// Reference points for notable Maine lakes.
+// Max-depth figures are commonly-cited approximations from public lake
+// survey summaries (Maine DEP / Maine Volunteer Lake Monitoring Program
+// style references). They are for general reference only and are NOT
+// surveyed bathymetric charts and must NOT be used for navigation.
+window.MAINE_LAKES = [
+    { name: "Sebago Lake",          lat: 43.8508, lng: -70.5730, maxDepthFt: 316, note: "Deepest lake in Maine; major drinking-water source for Portland." },
+    { name: "Moosehead Lake",       lat: 45.6300, lng: -69.6500, maxDepthFt: 246, note: "Largest lake in Maine by surface area." },
+    { name: "Chesuncook Lake",      lat: 46.0000, lng: -69.3200, maxDepthFt: 145, note: "Third-largest lake in Maine; dammed section of the West Branch Penobscot." },
+    { name: "Rangeley Lake",        lat: 44.9200, lng: -70.6500, maxDepthFt: 150, note: "Headwater lake of the Androscoggin River system." },
+    { name: "Sebec Lake",           lat: 45.2500, lng: -69.1500, maxDepthFt: 116, note: "Piscataquis County lake popular for boating and fishing." },
+    { name: "Damariscotta Lake",    lat: 44.1500, lng: -69.5500, maxDepthFt: 135, note: "Known for exceptional water clarity." },
+    { name: "Green Lake",           lat: 44.6300, lng: -68.5500, maxDepthFt: 130, note: "Site of a federal fish hatchery near Ellsworth." },
+    { name: "Lake Auburn",          lat: 44.1300, lng: -70.2800, maxDepthFt: 116, note: "Drinking-water reservoir for Lewiston-Auburn." },
+    { name: "China Lake",           lat: 44.4500, lng: -69.5500, maxDepthFt: 88,  note: "Central Maine kettle lake, popular for recreation." },
+    { name: "Cobbosseecontee Lake", lat: 44.2800, lng: -69.8500, maxDepthFt: 90,  note: "Largest lake in Kennebec County." },
+    { name: "Long Lake (Belgrade)", lat: 44.4500, lng: -69.8300, maxDepthFt: 73,  note: "Central lake of the Belgrade Lakes chain." },
+    { name: "Flagstaff Lake",       lat: 45.1500, lng: -70.2800, maxDepthFt: 34,  note: "Shallow flowage reservoir formed by a dam on the Dead River." }
+];
+</script>
+<script>
+// Maine Water Depth Explorer
+// Satellite basemap with live nautical-chart bathymetry overlays.
+
+// ---------------------------------------------------------------------
+// 1. Base map, centered on Maine
+// ---------------------------------------------------------------------
+const map = L.map('map', {
+    center: [45.2, -69.0],
+    zoom: 7,
+    minZoom: 4,
+    maxZoom: 18
+});
+window.map = map;
+
+const satellite = L.tileLayer(
+    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    {
+        maxZoom: 19,
+        attribution: 'Imagery &copy; Esri, Maxar, Earthstar Geographics'
+    }
+).addTo(map);
+
+const placeLabels = L.tileLayer(
+    'https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
+    {
+        maxZoom: 19,
+        attribution: 'Labels &copy; Esri'
+    }
+).addTo(map);
+
+// ---------------------------------------------------------------------
+// 2. NOAA ENC depth data (soundings, depth contours, depth areas)
+//    NOAA "ENC Direct to GIS" publishes five scale bands. We swap the
+//    underlying WMS service as the user zooms so the right level of
+//    chart detail (harbor-scale vs. whole-coast-scale) is always shown.
+// ---------------------------------------------------------------------
+const ENC_BANDS = [
+    { maxZoom: 8,  label: 'Overview', service: 'enc_overview', area: 89,  contour: 56,  sounding: 43 },
+    { maxZoom: 10, label: 'General',  service: 'enc_general',  area: 117, contour: 64,  sounding: 50 },
+    { maxZoom: 12, label: 'Coastal',  service: 'enc_coastal',  area: 166, contour: 82,  sounding: 61 },
+    { maxZoom: 14, label: 'Approach', service: 'enc_approach', area: 232, contour: 108, sounding: 80 },
+    { maxZoom: 99, label: 'Harbor',   service: 'enc_harbour',  area: 227, contour: 104, sounding: 76 }
+];
+
+function bandForZoom(zoom) {
+    return ENC_BANDS.find(b => zoom <= b.maxZoom) || ENC_BANDS[ENC_BANDS.length - 1];
+}
+
+const NoaaDepthLayer = L.TileLayer.WMS.extend({
+    getTileUrl: function (coords) {
+        const zoom = coords.z !== undefined ? coords.z : this._tileZoom;
+        const band = bandForZoom(zoom);
+        this._url = `https://gis.charttools.noaa.gov/arcgis/services/encdirect/${band.service}/MapServer/WMSServer`;
+        this.wmsParams.layers = `${band.area},${band.contour},${band.sounding}`;
+        if (window.__currentBand !== band.label) {
+            window.__currentBand = band.label;
+            const el = document.getElementById('bandLabel');
+            if (el) el.textContent = `Chart detail: ${band.label} scale`;
+        }
+        return L.TileLayer.WMS.prototype.getTileUrl.call(this, coords);
+    }
+});
+
+const noaaDepths = new NoaaDepthLayer('', {
+    format: 'image/png',
+    transparent: true,
+    version: '1.1.1',
+    opacity: 0.9,
+    maxZoom: 19,
+    attribution: 'Depth data &copy; NOAA Office of Coast Survey (ENC Direct to GIS) — not for navigation'
+}).addTo(map);
+
+// ---------------------------------------------------------------------
+// 3. GEBCO global bathymetric grid (color-shaded ocean + lake depth)
+// ---------------------------------------------------------------------
+const gebco = L.tileLayer.wms('https://wms.gebco.net/mapserv?', {
+    layers: 'GEBCO_LATEST_2',
+    format: 'image/png',
+    transparent: true,
+    version: '1.1.1',
+    opacity: 0.55,
+    maxZoom: 19,
+    attribution: 'Bathymetry &copy; GEBCO Compilation Group'
+});
+
+// ---------------------------------------------------------------------
+// 4. Notable Maine lake depth markers
+// ---------------------------------------------------------------------
+const lakeLayer = L.layerGroup();
+
+(window.MAINE_LAKES || []).forEach(lake => {
+    const marker = L.circleMarker([lake.lat, lake.lng], {
+        radius: 7,
+        className: 'depth-marker',
+        color: '#ffffff',
+        weight: 2,
+        fillColor: '#0b6cf0',
+        fillOpacity: 0.9
+    });
+    const depthM = Math.round(lake.maxDepthFt * 0.3048);
+    marker.bindPopup(
+        `<b>${lake.name}</b><br>` +
+        `Max depth: ~${lake.maxDepthFt} ft (${depthM} m)<br>` +
+        `${lake.note}<br>` +
+        `<em>Approximate reference figure — not a surveyed chart.</em>`
+    );
+    marker.addTo(lakeLayer);
+});
+lakeLayer.addTo(map);
+
+// ---------------------------------------------------------------------
+// 5. Layer control
+// ---------------------------------------------------------------------
+L.control.layers(
+    {
+        'Satellite (Esri)': satellite
+    },
+    {
+        'Place labels': placeLabels,
+        'NOAA depth soundings & contours': noaaDepths,
+        'GEBCO global bathymetry': gebco,
+        'Maine lake depth markers': lakeLayer
+    },
+    { collapsed: false, position: 'topleft' }
+).addTo(map);
+
+L.control.scale({ imperial: true, metric: true }).addTo(map);
+</script>
 </body>
 </html>
