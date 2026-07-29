@@ -1,6 +1,8 @@
-To use, download, unzip, and open html file.
+# Maine Lake Depth Contours
 
-## Maine Lake Depth Contours (`depth-map.html`)
+**Live (iPhone/PWA):** https://plutocoding.github.io/marineScienceMidterm/
+
+## Desktop (`depth-map.html`)
 
 An interactive map centered on Maine showing freshwater bathymetric depth
 contour lines — lakes and ponds only, no land data — over a live satellite
@@ -59,9 +61,4 @@ open it in Safari and use Share → "Add to Home Screen" for a full-screen app
 icon with no browser chrome, and a service worker caches the app shell so it
 still opens without a connection (the live satellite tiles still need one).
 
-To make it live, enable GitHub Pages once in this repo's settings — Settings
-→ Pages → Source → "Deploy from a branch" → pick this branch and the `/docs`
-folder → Save. It'll then be served at
-`https://plutocoding.github.io/marineScienceMidterm/`. Pages sites are
-public regardless of the repo's visibility, which is why this wasn't flipped
-on automatically.
+Served via GitHub Pages from this branch's `/docs` folder.
