@@ -1,24 +1,27 @@
 To use, download, unzip, and open html file.
 
-## Maine Water Depth Explorer (`depth-map.html`)
+## Maine Lake Depth Contours (`depth-map.html`)
 
-An interactive map centered on Maine that overlays live bathymetry / depth-chart
-data on satellite imagery. Just open `depth-map.html` in a browser (internet
-connection required to load the map tiles and depth data) — no build step or
-server needed.
+An interactive map centered on Maine showing freshwater bathymetric depth
+contour lines — lakes and ponds only, no land data — over a live satellite
+basemap. Just open `depth-map.html` in a browser (internet connection
+required to load the satellite tiles) — no build step or server needed. All
+depth data is bundled directly in the file, so the contours themselves work
+offline once the page is loaded.
 
-Data layers:
-- **Satellite basemap** — Esri World Imagery, with an optional place-labels overlay.
-- **NOAA nautical chart depth soundings, contours & depth areas** — pulled live
-  from NOAA's Office of Coast Survey "ENC Direct to GIS" web services. The app
-  automatically switches between NOAA's five chart scale bands (Overview →
-  General → Coastal → Approach → Harbor) as you zoom in, so bays, harbors, and
-  river mouths all along the Maine coast show progressively finer depth detail.
-- **GEBCO global bathymetric grid** — worldwide color-shaded ocean-floor (and
-  lake) elevation data, toggleable as a semi-transparent overlay.
-- **Notable Maine lake markers** — reference points with approximate maximum
-  depths for lakes such as Sebago, Moosehead, and Rangeley (informational only,
-  not surveyed charts).
+**Data source & pipeline:** Maine's official statewide "LakeDpth" lake-depth
+sounding dataset (Maine Office of GIS / Maine DEP, digitized from Maine Dept.
+of Inland Fisheries & Wildlife lake survey maps) — roughly 120,000 individual
+depth soundings across the state. These were spatially clustered into
+individual water bodies, Delaunay-triangulated, and contoured (linear
+interpolation + marching-squares-style extraction) into smooth isobath lines
+at regular depth intervals. Lake names were attached via point-in-polygon
+lookup against the USGS National Hydrography Dataset. The result:
+**depth contour lines for 1,500+ Maine lakes and ponds**, color-graduated by
+depth, plus a searchable marker for every lake.
 
-All layers are pulled live from public NOAA and GEBCO web map services, so the
-depth data shown is always current — no data files are bundled with the app.
+Because the contours are reconstructed from scattered official soundings
+rather than a re-publication of the original survey cartography, treat them
+as a close approximation for reference/educational use — not a navigational
+or engineering-grade chart. A few very large lakes (e.g. Sebago, Moosehead)
+fall in gaps of the source tiling and aren't currently included.
