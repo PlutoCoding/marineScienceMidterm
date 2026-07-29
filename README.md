@@ -12,24 +12,32 @@ offline once the page is loaded.
 **Data source & pipeline:** Maine's official statewide "LakeDpth" lake-depth
 sounding dataset (Maine Office of GIS / Maine DEP, digitized from Maine Dept.
 of Inland Fisheries & Wildlife lake survey maps) — roughly 120,000 individual
-depth soundings across the state. These were spatially clustered into
-individual water bodies, Delaunay-triangulated, and contoured (linear
-interpolation + marching-squares-style extraction) into smooth isobath lines
-at regular depth intervals. Lake names were attached via point-in-polygon
-lookup against the USGS National Hydrography Dataset. The result:
-**depth contour lines for 311 Maine lakes and ponds**, color-graduated by
-depth, plus a searchable marker for each one.
+depth soundings across the state, combined with real lake shoreline polygons
+from the USGS National Hydrography Dataset (large-scale Waterbody layer,
+~42,000 Maine lake/pond/reservoir polygons):
 
-Clusters are only contoured if they have enough points, spread out in a
-genuinely two-dimensional shape, to support a trustworthy reconstruction —
-sparse or nearly single-file point chains (e.g. along a narrow inlet stream)
-are skipped rather than rendered as a misleading line. That quality bar is
-why the count is in the hundreds rather than the low thousands: many more
-lakes have a handful of soundings, but too few to reconstruct real contours
-from.
+1. Every sounding is assigned to its actual lake via point-in-polygon against
+   the NHD shoreline — not a distance-based guess — so a lake's soundings
+   stay together (and different lakes stay apart) by ground truth, not
+   proximity.
+2. Each lake's shoreline is resampled and fed back in as synthetic 0 ft
+   points, anchoring the interpolation to the lake's real shape instead of
+   extrapolating past the sample points.
+3. The combined point set (soundings + shoreline) is Delaunay-triangulated,
+   every triangle whose centroid falls outside the real polygon is masked
+   out, and the rest is contoured (linear interpolation, marching-squares
+   extraction) into isobath lines at regular depth intervals.
+4. Each line gets a depth label positioned at its midpoint and rotated to
+   follow the line, in the style of commercial lake-contour apps
+   (Navionics/Garmin LakeVü-type charts) — rendered lazily per-viewport so
+   the page stays responsive with thousands of lines in the dataset.
+
+The result: **depth contour lines for 1,638 Maine lakes and ponds**,
+color-graduated by depth and numerically labeled, plus a searchable marker
+for each one — including large lakes like Sebago, Moosehead, and Rangeley.
 
 Because the contours are reconstructed from scattered official soundings
 rather than a re-publication of the original survey cartography, treat them
 as a close approximation for reference/educational use — not a navigational
-or engineering-grade chart. A few very large lakes (e.g. Sebago, Moosehead)
-fall in gaps of the source tiling and aren't currently included.
+or engineering-grade chart. Water bodies with only a handful of soundings are
+skipped rather than rendered as an unreliable shape.
