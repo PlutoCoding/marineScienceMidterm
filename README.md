@@ -48,3 +48,20 @@ The same map, redesigned for touch and packaged as a native Android app with
 Capacitor — see `mobile-app/README.md` for what's different (no
 always-visible panels, an adjustable Contour Detail control, build
 instructions) and how to rebuild the APK.
+
+## iPhone (`docs/`)
+
+Apple doesn't allow Android-style APK sideloading, and a true native iOS
+build needs Xcode (macOS only) plus a paid Apple Developer account to
+install on a physical device — not something buildable from here. Instead,
+`docs/` is the same mobile UI packaged as an installable **PWA**: on iPhone,
+open it in Safari and use Share → "Add to Home Screen" for a full-screen app
+icon with no browser chrome, and a service worker caches the app shell so it
+still opens without a connection (the live satellite tiles still need one).
+
+To make it live, enable GitHub Pages once in this repo's settings — Settings
+→ Pages → Source → "Deploy from a branch" → pick this branch and the `/docs`
+folder → Save. It'll then be served at
+`https://plutocoding.github.io/marineScienceMidterm/`. Pages sites are
+public regardless of the repo's visibility, which is why this wasn't flipped
+on automatically.
