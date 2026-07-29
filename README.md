@@ -41,3 +41,10 @@ rather than a re-publication of the original survey cartography, treat them
 as a close approximation for reference/educational use — not a navigational
 or engineering-grade chart. Water bodies with only a handful of soundings are
 skipped rather than rendered as an unreliable shape.
+
+## Android app (`mobile-app/`)
+
+The same map, redesigned for touch and packaged as a native Android app with
+Capacitor — see `mobile-app/README.md` for what's different (no
+always-visible panels, an adjustable Contour Detail control, build
+instructions) and how to rebuild the APK.
