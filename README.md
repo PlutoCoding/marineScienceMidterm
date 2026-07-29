@@ -44,6 +44,16 @@ as a close approximation for reference/educational use — not a navigational
 or engineering-grade chart. Water bodies with only a handful of soundings are
 skipped rather than rendered as an unreliable shape.
 
+**Offline abstract map:** satellite imagery obviously needs a live
+connection. All three builds (desktop, Android, PWA) also bundle a
+lightweight vector basemap — the same USGS lake shoreline polygons used to
+anchor the contours (~2,600 lakes/ponds, heavily simplified), drawn as filled
+shapes on a plain land-colored background instead of imagery. It switches on
+automatically if satellite tiles start failing or the browser reports you're
+offline, and back off once the connection returns — or toggle it manually
+any time. No extra download: it's inlined in the same file as the contour
+data.
+
 ## Android app (`mobile-app/`)
 
 The same map, redesigned for touch and packaged as a native Android app with

@@ -17,6 +17,11 @@ touch/mobile:
 - Depth labels sit on the lines themselves (Navionics/LakeVü style),
   rendered lazily per-viewport so it stays smooth with 8,000+ contour lines
   in the underlying dataset.
+- **Offline abstract basemap** — a simplified lake-shapes-on-plain-background
+  sketch (no imagery) that the app switches to automatically if satellite
+  tiles fail to load or the device goes offline, and back once the
+  connection returns. Toggle it manually from the Basemap section of the
+  settings sheet. The shape data is bundled inline, same as the contours.
 
 ## Rebuilding the APK
 
