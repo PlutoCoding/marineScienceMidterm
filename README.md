@@ -17,8 +17,16 @@ individual water bodies, Delaunay-triangulated, and contoured (linear
 interpolation + marching-squares-style extraction) into smooth isobath lines
 at regular depth intervals. Lake names were attached via point-in-polygon
 lookup against the USGS National Hydrography Dataset. The result:
-**depth contour lines for 1,500+ Maine lakes and ponds**, color-graduated by
-depth, plus a searchable marker for every lake.
+**depth contour lines for 311 Maine lakes and ponds**, color-graduated by
+depth, plus a searchable marker for each one.
+
+Clusters are only contoured if they have enough points, spread out in a
+genuinely two-dimensional shape, to support a trustworthy reconstruction —
+sparse or nearly single-file point chains (e.g. along a narrow inlet stream)
+are skipped rather than rendered as a misleading line. That quality bar is
+why the count is in the hundreds rather than the low thousands: many more
+lakes have a handful of soundings, but too few to reconstruct real contours
+from.
 
 Because the contours are reconstructed from scattered official soundings
 rather than a re-publication of the original survey cartography, treat them
